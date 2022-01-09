@@ -83,7 +83,7 @@ def start(update, context):
     uptime = get_readable_time((time.time() - botStartTime))
     if CustomFilters.authorized_user(update) or CustomFilters.authorized_chat(update):
         if update.message.chat.type == "private" :
-            reply_message = sendMessage(f"<b>🤗Hello {update.message.chat.first_name}</b>,\n\nWelcome to ɯιȥαɾԃ x ɱιɾɾσɾ Mirror Bot", context.bot, update)
+            reply_message = sendMessage(f"<b>🤗Hello {update.message.chat.first_name}</b>,\n\nWelcome to Emily Mirror Mirror Bot", context.bot, update)
             threading.Thread(target=auto_delete_message, args=(bot, update.message, reply_message)).start()
         else :
             sendMessage(f"<b>I'm Awake Already!</b>\n<b>Haven't Slept Since:</b> <code>{uptime}</code>", context.bot, update)
@@ -248,8 +248,8 @@ def main():
     elif OWNER_ID:
         try:
             kie = datetime.now(pytz.timezone(f'{TIMEZONE}'))
-            jam = kie.strftime('\n📅 Date: %d/%m/%Y\n⏰ Time: %I:%M%P\n🌃 TimeZone: Asia/Kolkata')
-            text = f"*🤖 BOT Rebooted 🔄*\n*{jam}*\n\n*ℹ️ Please Re-Download again if Any downloads got Canceled during Reboot*\n\n𝗖𝗼𝘂𝗿𝘁𝗲𝘀𝘆 𝗼𝗳 ɯιȥαɾԃ 𝘅 ɱιɾɾσɾ\n\n*#Rebooted*"
+            jam = kie.strftime('\n Date: %d/%m/%Y\n Time: %I:%M%P\n TimeZone: Asia/Kolkata')
+            text = f"* Bot Successfully Rebooted ! *\n*{jam}*\n\n*ℹ️ You will need to again Start Downloads now !!! *\n\nCourtesy of Emily Mirror\n\n*#Rebooted*"
             bot.sendMessage(chat_id=OWNER_ID, text=text, parse_mode="markdown")
             if AUTHORIZED_CHATS:
                 for i in AUTHORIZED_CHATS:

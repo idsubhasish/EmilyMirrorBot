@@ -1,4 +1,4 @@
-<B> This is a stable version of Mirror Bot used in Emily Mirror.It is not gonna be updates but I can guarantee you that this Bot works perfectly and if fast as fuck! </B>
+<B> This is a stable version of Mirror Bot used in Emily Mirror.It is not gonna be updates but I can guarantee you that this Bot works perfectly and its fast as fuck! Dont fuck the repo !!!  </B>
 
 # Features:
 
