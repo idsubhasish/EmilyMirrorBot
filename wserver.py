@@ -203,17 +203,20 @@ input[type="submit"]:hover, input[type="submit"]:focus{
           src="https://telegra.ph/file/cc06d0c613491080cc174.png"
           alt="logo"
         />
-        <a href="https://t.me/missemily">
-          <h2 class="name">Qbittorrent Selection</h2>
+        <a href="https://t.me/missemily2022">
+          <h2 class="name">Qbittorrent Selection (Emily Mirror Bot)</h2>
         </a>
       </div>
       <div class="social">
-        <a href="https://github.com/missemily2022/EmilyMirrorBot"><i class="fab fa-github"></i></a>
-        <a href="https://t.me/missemily"><i class="fab fa-telegram"></i></a>
+        <a href="https://github.com/missemily2022/EmilyMirrorBot_2"><i class="fab fa-github"></i></a>
+        <a href="https://t.me/missemily2022"><i class="fab fa-telegram"></i></a>
       </div>
     </header>
     <section>
-      <h2 class="intro">Select the files you want to download</h2>
+      <div class="intro">
+        <h4>Selected files size: <b id="checked_size">0</b> of <b id="total_size">0</b></h4>
+        <h4>Selected files: <b id="checked_files">0</b> of <b id="total_files">0</b></h4>
+      </div>
       <form action="{form_url}" method="POST">
        {My_content}
        <input type="submit" name="Select these files ;)">
@@ -222,6 +225,7 @@ input[type="submit"]:hover, input[type="submit"]:focus{
 
     <script>
       $(document).ready(function () {
+        docready();
         var tags = $("li").filter(function () {
           return $(this).find("ul").length !== 0;
         });
@@ -243,37 +247,37 @@ input[type="submit"]:hover, input[type="submit"]:focus{
       });
 
       if(document.getElementsByTagName("ul").length >= 10){
-      var labels = document.querySelectorAll("label");
-      //Shorting the file/folder names
-      labels.forEach(function (label) {
-        if (label.innerText.toString().split(" ").length >= 6) {
-          let FirstPart = label.innerText
-            .toString()
-            .split(" ")
-            .slice(0, 3)
-            .join(" ");
-          let SecondPart = label.innerText
-            .toString()
-            .split(" ")
-            .splice(-3)
-            .join(" ");
-          label.innerText = `${FirstPart}... ${SecondPart}`;
-        }
-        if (label.innerText.toString().split(".").length >= 6) {
-          let first = label.innerText
-            .toString()
-            .split(".")
-            .slice(0, 3)
-            .join(" ");
-          let second = label.innerText
-            .toString()
-            .split(".")
-            .splice(-3)
-            .join(".");
-          label.innerText = `${first}... ${second}`;
-        }
-      });
-     }
+        var labels = document.querySelectorAll("label");
+        //Shorting the file/folder names
+        labels.forEach(function (label) {
+            if (label.innerText.toString().split(" ").length >= 9) {
+                let FirstPart = label.innerText
+                    .toString()
+                    .split(" ")
+                    .slice(0, 5)
+                    .join(" ");
+                let SecondPart = label.innerText
+                    .toString()
+                    .split(" ")
+                    .splice(-5)
+                    .join(" ");
+                label.innerText = `${FirstPart}... ${SecondPart}`;
+            }
+            if (label.innerText.toString().split(".").length >= 9) {
+                let first = label.innerText
+                    .toString()
+                    .split(".")
+                    .slice(0, 5)
+                    .join(" ");
+                let second = label.innerText
+                    .toString()
+                    .split(".")
+                    .splice(-5)
+                    .join(".");
+                label.innerText = `${first}... ${second}`;
+            }
+        });
+    }
     </script>
 
 <script>
@@ -317,6 +321,56 @@ $('input[type="checkbox"]').change(function(e) {
   }
   checkSiblings(container);
 });
+</script>
+<script>
+    function docready () {
+        $("label[for^='filenode_']").css("cursor", "pointer");
+        $("label[for^='filenode_']").click(function () {
+            $(this).prev().click();
+        });
+        checked_size();
+        checkingfiles();
+        var total_files = $("label[for^='filenode_']").length;
+        $("#total_files").text(total_files);
+        var total_size = 0;
+        var ffilenode = $("label[for^='filenode_']");
+        ffilenode.each(function () {
+            var size = parseFloat($(this).data("size"));
+            total_size += size;
+            $(this).append(" - " + humanFileSize(size));
+        });
+        $("#total_size").text(humanFileSize(total_size));
+    };
+    function checked_size() {
+        var checked_size = 0;
+        var checkedboxes = $("input[name^='filenode_']:checked");
+        checkedboxes.each(function () {
+            var size = parseFloat($(this).data("size"));
+            checked_size += size;
+        });
+        $("#checked_size").text(humanFileSize(checked_size));
+    }
+    function checkingfiles() {
+        var checked_files = $("input[name^='filenode_']:checked").length;
+        $("#checked_files").text(checked_files);
+    }
+    $("input[name^='foldernode_']").change(function () {
+        checkingfiles();
+        checked_size();
+    });
+    $("input[name^='filenode_']").change(function () {
+        checkingfiles();
+        checked_size();
+    });
+    function humanFileSize(size) {
+        var i = -1;
+        var byteUnits = [' kB', ' MB', ' GB', ' TB', 'PB', 'EB', 'ZB', 'YB'];
+        do {
+            size = size / 1024;
+            i++;
+        } while (size > 1024);
+        return Math.max(size, 0).toFixed(1) + byteUnits[i];
+    }
 </script>
 </body>
 </html>
@@ -528,13 +582,13 @@ section span{
           src="https://telegra.ph/file/cc06d0c613491080cc174.png"
           alt="logo"
         />
-        <a href="https://t.me/missemily">
-          <h2 class="name">Qbittorrent Selection</h2>
+        <a href="https://t.me/missemily2022">
+          <h2 class="name">Qbittorrent Selection (Emily Mirror Bot)</h2>
         </a>
       </div>
       <div class="social">
-        <a href="https://github.com/missemily2022/EmilyMirrorBot"><i class="fab fa-github"></i></a>
-        <a href="https://t.me/missemily"><i class="fab fa-telegram"></i></a>
+        <a href="https://github.com/missemily2022/EmilyMirrorBot_2"><i class="fab fa-github"></i></a>
+        <a href="https://t.me/missemily2022"><i class="fab fa-telegram"></i></a>
       </div>
     </header>
     <section>
@@ -633,6 +687,7 @@ async def re_verfiy(paused, resumed, client, torr):
             LOGGER.error("Errored in reverification resumed")
         k += 1
         if k > 5:
+            client.auth_log_out()
             return False
     client.auth_log_out()
     LOGGER.info("Verified")
@@ -684,7 +739,7 @@ async def set_priority(request):
 @routes.get('/')
 async def homepage(request):
 
-    return web.Response(text="<h1>See EmilyMirrorBot <a href='https://github.com/missemily2022/EmilyMirrorBot'>at GitHub</a> By <a href='https://github.com/missemily2022'>Miss Emily</a></h1>", content_type="text/html")
+    return web.Response(text="<h1>See Emily Mirror Bot 2 <a href='https://github.com/missemily2022/EmilyMirrorBot_2'>at GitHub</a> By <a href='https://github.com/missemily2022'>Miss Emily</a></h1>", content_type="text/html")
 
 async def e404_middleware(app, handler):
 
@@ -693,11 +748,11 @@ async def e404_middleware(app, handler):
         try:
             response = await handler(request)
             if response.status == 404:
-                return web.Response(text="<h1>404: Page not found</h2><br><h3>EmilyMirrorBot</h3>", content_type="text/html")
+                return web.Response(text="<h1>404: Page not found</h2><br><h3>Emily-Mirror-Bot</h3>", content_type="text/html")
             return response
         except web.HTTPException as ex:
             if ex.status == 404:
-                return web.Response(text="<h1>404: Page not found</h2><br><h3>EmilyMirrorBot</h3>", content_type="text/html")
+                return web.Response(text="<h1>404: Page not found</h2><br><h3>Emily-Mirror-Bot</h3>", content_type="text/html")
             raise
     return middleware_handler
 

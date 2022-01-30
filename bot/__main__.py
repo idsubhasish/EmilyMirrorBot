@@ -14,11 +14,12 @@ import pytz
 import time
 import threading
 
+from telegram.error import BadRequest, Unauthorized
 from telegram import ParseMode, InlineKeyboardMarkup, InlineKeyboardButton, BotCommand
 from telegram.ext import CommandHandler, CallbackQueryHandler, CallbackContext, InlineQueryHandler
 
 from wserver import start_server_async
-from bot import bot, app, dispatcher, updater, botStartTime, IGNORE_PENDING_REQUESTS, IS_VPS, PORT, alive, web, OWNER_ID, AUTHORIZED_CHATS, LOGGER, TIMEZONE
+from bot import bot, app, dispatcher, updater, botStartTime, IGNORE_PENDING_REQUESTS, IS_VPS, PORT, alive, web, OWNER_ID, AUTHORIZED_CHATS, LOGGER, TIMEZONE, RESTARTED_GROUP_ID
 from bot.helper.ext_utils import fs_utils
 from bot.helper.telegram_helper.bot_commands import BotCommands
 from bot.helper.telegram_helper.message_utils import sendMessage, sendMarkup, editMessage, sendLogFile
@@ -32,6 +33,7 @@ now=datetime.now(pytz.timezone(f'{TIMEZONE}'))
 
 def stats(update, context):
     currentTime = get_readable_time(time.time() - botStartTime)
+    current = now.strftime('%m/%d %I:%M:%S %p')
     total, used, free = shutil.disk_usage('.')
     total = get_readable_file_size(total)
     used = get_readable_file_size(used)
@@ -39,35 +41,24 @@ def stats(update, context):
     sent = get_readable_file_size(psutil.net_io_counters().bytes_sent)
     recv = get_readable_file_size(psutil.net_io_counters().bytes_recv)
     cpuUsage = psutil.cpu_percent(interval=0.5)
+    memory = psutil.virtual_memory().percent
     disk = psutil.disk_usage('/').percent
-    p_core = psutil.cpu_count(logical=False)
-    t_core = psutil.cpu_count(logical=True)
-    swap = psutil.swap_memory()
-    swap_p = swap.percent
-    swap_t = get_readable_file_size(swap.total)
-    swap_u = get_readable_file_size(swap.used)
-    memory = psutil.virtual_memory()
-    mem_p = memory.percent
-    mem_t = get_readable_file_size(memory.total)
-    mem_a = get_readable_file_size(memory.available)
-    mem_u = get_readable_file_size(memory.used)
     stats = f'<b>•• ━━ Emily Mirror Bot ━━ ••</b>\n\n' \
-            f'<b>• ⌚Running From :-> </b> {currentTime}\n\n'\
-            f'🗄️DISK INFO🗄️<b>• Total :-> </b> {total}\n'\
-            f'<b>• Used :-> </b> {used} | <b>• Free :-> </b> {free}\n\n'\
-            f'📇DATA USAGE📇\n<b>• Uploaded:-> </b> {sent}\n' \
-            f'<b>• Downloaded:-> </b> {recv}\n\n' \
-            f'🖥️SYSTEM INFO🖥️\n<b>• CPU :-> </b> {cpuUsage}%\n'\
-            f'<b>• Disk :-> </b> {disk}%\n\n'\
-            f'<b>Physical Cores:</b> {p_core}\n'\
-            f'<b>Total Cores:</b> {t_core}\n\n'\
-            f'<b>SWAP:</b> {swap_t} | <b>Used:</b> {swap_p}%\n\n'\
-            f'⛏️MEMORY INFO⛏️\n<b>• Total:-> </b> {mem_t}\n'\
-            f'<b>• Free:-> </b> {mem_a} | <b>• Used:-> </b> {mem_u}\n'\
-            f'<b>• Usage :-> </b> {mem_p}%\n'\
+            f'Rᴜɴɴɪɴɢ Sɪɴᴄᴇ : {currentTime}\n' \
+            f'Sᴛᴀʀᴛᴇᴅ Aᴛ : {current}\n\n' \
+            f'<b>DISK INFO</b>\n' \
+            f'<b><i>Total</i></b>: {total}\n' \
+            f'<b><i>Used</i></b>: {used} ~ ' \
+            f'<b><i>Free</i></b>: {free}\n\n' \
+            f'<b>DATA USAGE</b>\n' \
+            f'<b><i>UL</i></b>: {sent} ~ ' \
+            f'<b><i>DL</i></b>: {recv}\n\n' \
+            f'<b>SERVER STATS</b>\n' \
+            f'<b><i>CPU</i></b>: {cpuUsage}%\n' \
+            f'<b><i>RAM</i></b>: {memory}%\n' \
+            f'<b><i>DISK</i></b>: {disk}%\n' \
             f'<b>•• ━ ɱαԃҽ ɯιƚԋ ʅσʋҽ Ⴆყ Miss Emily ━ ••</b>\n\n'
-    keyboard = [[InlineKeyboardButton("CLOSE", callback_data="stats_close")]]
-    main = sendMarkup(stats, context.bot, update, reply_markup=InlineKeyboardMarkup(keyboard))
+    sendMessage(stats, context.bot, update)
 
 
 def call_back_data(update, context):
@@ -235,7 +226,21 @@ botcmds = [
         (f'{BotCommands.HelpCommand}','Get detailed help')
     ]
 
-def main():
+
+def main():     
+    GROUP_ID = f'{RESTARTED_GROUP_ID}'
+    kie = datetime.now(pytz.timezone(f'{TIMEZONE}'))
+    jam = kie.strftime('\n 𝐃𝐚𝐭𝐞: %d/%m/%Y\n 𝐃𝐚𝐭𝐞: %I:%M%P\n 𝐓𝐢𝐦𝐞𝐙𝐨𝐧𝐞: Asia/Kolkata')
+    if GROUP_ID is not None and isinstance(GROUP_ID, str):        
+        try:
+            dispatcher.bot.sendMessage(f"{GROUP_ID}", f" 𝐌𝐢𝐫𝐫𝐨𝐫 𝐁𝐨𝐭 𝐒𝐮𝐜𝐜𝐞𝐬𝐬𝐟𝐮𝐥𝐥𝐲 𝐑𝐞𝐛𝐨𝐨𝐭𝐞𝐝 ! \n{jam}\n\nℹ️ 𝐘𝐨𝐮 𝐰𝐢𝐥𝐥 𝐧𝐞𝐞𝐝 𝐭𝐨 𝐚𝐠𝐚𝐢𝐧 𝐒𝐭𝐚𝐫𝐭 𝐃𝐨𝐰𝐧𝐥𝐨𝐚𝐝𝐬 𝐧𝐨𝐰 !!! \n\nCourtesy of  𝐄𝐦𝐢𝐥𝐲 𝐌𝐢𝐫𝐫𝐨𝐫  \n#Rebooted")
+        except Unauthorized:
+            LOGGER.warning(
+                "Bot is not able to send Restart Message to Group ID !"
+            )
+        except BadRequest as e:
+            LOGGER.warning(e.message)
+            
     fs_utils.start_cleanup()
     if IS_VPS:
         asyncio.get_event_loop().run_until_complete(start_server_async(PORT))
@@ -243,20 +248,21 @@ def main():
     if os.path.isfile(".restartmsg"):
         with open(".restartmsg") as f:
             chat_id, msg_id = map(int, f)
-        bot.edit_message_text("Restarted successfully!", chat_id, msg_id)
+        bot.edit_message_text("𝚁𝚎𝚜𝚝𝚊𝚛𝚝𝚎𝚍 𝚜𝚞𝚌𝚌𝚎𝚜𝚜𝚏𝚞𝚕𝚕𝚢!", chat_id, msg_id)
         os.remove(".restartmsg")
     elif OWNER_ID:
         try:
             kie = datetime.now(pytz.timezone(f'{TIMEZONE}'))
             jam = kie.strftime('\n Date: %d/%m/%Y\n Time: %I:%M%P\n TimeZone: Asia/Kolkata')
-            text = f"* Bot Successfully Rebooted ! *\n*{jam}*\n\n*ℹ️ You will need to again Start Downloads now !!! *\n\nCourtesy of Emily Mirror\n\n*#Rebooted*"
-            bot.sendMessage(chat_id=OWNER_ID, text=text, parse_mode="markdown")
+            text = f" Mirror Bot Successfully Rebooted ! \n{jam}\n\nℹ️ You will need to again Start Downloads now !!! \n\nCourtesy of  Emily Mirror  \n#Rebooted"
+            bot.sendMessage(chat_id=OWNER_ID, text=text, parse_mode=ParseMode.HTML)
             if AUTHORIZED_CHATS:
                 for i in AUTHORIZED_CHATS:
-                    bot.sendMessage(chat_id=i, text=text, parse_mode="markdown")
+                    bot.sendMessage(chat_id=i, text=text, parse_mode=ParseMode.HTML)
         except Exception as e:
             LOGGER.warning(e)
-            
+
+    bot.set_my_commands(botcmds)        
     start_handler = CommandHandler(BotCommands.StartCommand, start, run_async=True)
     ping_handler = CommandHandler(BotCommands.PingCommand, ping,
                                   filters=CustomFilters.authorized_chat | CustomFilters.authorized_user, run_async=True)

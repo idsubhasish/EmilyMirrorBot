@@ -523,6 +523,13 @@ try:
 except KeyError:
     TIMEZONE = 'Asia/Kolkata'
     
+try:
+    RESTARTED_GROUP_ID = getConfig('RESTARTED_GROUP_ID')
+    if len(RESTARTED_GROUP_ID) == 0:
+        RESTARTED_GROUP_ID = None
+except KeyError:
+    RESTARTED_GROUP_ID = '-1001474827668'
+    
 updater = tg.Updater(token=BOT_TOKEN, request_kwargs={'read_timeout': 30, 'connect_timeout': 15})
 bot = updater.bot
 dispatcher = updater.dispatcher
